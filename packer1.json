@@ -1,0 +1,37 @@
+{
+  "builders": [{
+    "type": "docker",
+    "image": "tomcat:8.0",
+    "commit": "true",
+    "changes": [
+    "CMD [\"/usr/local/tomcat/bin/catalina.sh\",\"run\"]"
+  ]
+  }],
+  "provisioners": [
+    {
+    "type": "file",
+    "source": "startup.sh",
+    "destination": "/usr/local/tomcat/webapps/"
+    },
+    {
+    "type": "file",
+    "source": "sample.war",
+    "destination": "/usr/local/tomcat/webapps/"
+    }
+   ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "satwikmukherjee/runner-poc",
+        "tag": "{{timestamp}}"
+      },
+      {
+        "type": "docker-push",
+	"login": "true",
+	"login_username": "satwikmukherjee",
+    	"login_password": "Abcd@123"
+      }
+    ]
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "variables": {
+    "docker_tag": "{{timestamp}}",
+    "service_id": "sld48r9ahbd6"
+  },
+  "builders": [{
+    "type": "docker",
+    "image": "satwikmukherjee/runner-poc:tomcat-maven-jdk",
+    "commit": "true",
+    "changes": [
+    "CMD [\"/usr/local/tomcat/bin/catalina.sh\",\"run\"]"
+  ]
+  }],
+  "provisioners": [
+    {
+    "type": "shell",
+    "inline": ["mkdir -p /usr/local/tomcat/src"]
+    },
+    {
+    "type": "file",
+    "source": "src/",
+    "destination": "/usr/local/tomcat/src/"
+    },
+    {
+    "type": "file",
+    "source": "pom.xml",
+    "destination": "/usr/local/tomcat/"
+    },
+    {
+    "type": "file",
+    "source": "settings.xml",
+    "destination": "/etc/maven/"
+    },
+    {
+    "type": "shell",
+    "inline": ["mvn install"]
+    },
+    {
+    "type": "shell",
+    "inline": ["mv target/*.war /usr/local/tomcat/webapps/"]
+    }
+   ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "satwikmukherjee/runner-poc",
+        "tag": "{{user `docker_tag`}}"
+      },
+      {
+        "type": "docker-push",
+	"login": "true",
+	"login_username": "satwikmukherjee",
+    	"login_password": "Abcd@123"
+      },
+      {
+  	"type": "shell-local",
+  	"inline": ["docker service update --image satwikmukherjee/runner-poc:{{user `docker_tag`}} {{user `service_id`}}"]
+      }
+    ]
+  ]
+}
+

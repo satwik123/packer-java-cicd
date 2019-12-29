@@ -1,0 +1,41 @@
+{
+  "builders": [{
+    "type": "docker",
+    "image": "maven:3.6.0-jdk-11-slim",
+    "discard": "true",
+    "changes": [
+    "WORKDIR /"
+  ]
+  }],
+  "provisioners": [
+    {
+    "type": "shell",
+    "inline": ["mkdir -p /src"]
+    },
+    {
+    "type": "file",
+    "source": "src/",
+    "destination": "/src/"
+    },
+    {
+    "type": "file",
+    "source": "pom.xml",
+    "destination": "/"
+    },
+    {
+    "type": "file",
+    "source": "settings.xml",
+    "destination": "/usr/share/maven/conf/"
+    },
+    {
+    "type": "shell",
+    "inline": ["mvn install"]
+    },
+    {
+      "type": "file",
+      "source": "target/sample.war",
+      "destination": "/root/packer-java/packer-java/",
+      "direction": "download"
+    }
+   ]
+}
