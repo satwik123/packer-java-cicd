@@ -20,6 +20,6 @@ public class SimpleServlet extends HttpServlet {
    protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
          throws ServletException, IOException {
       resp.setContentType("text/plain");
-      resp.getWriter().write("Hello! Dear User");
+      resp.getWriter().write("Hello! Dear Engineer");
    }
 }
